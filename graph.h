@@ -15,4 +15,6 @@ graph *init_graph(int size, GRERR *err);
 
 void destroy_graph(graph *graph, GRERR *err);
 
-void add_edge();
+void add_edge(graph *graph, int vertex1, int vertex2, GRERR *err);
+
+void print_graph(graph *graph, GRERR *err);
