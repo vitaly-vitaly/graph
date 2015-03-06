@@ -21,7 +21,7 @@ graph *init_graph(int size, GRERR *err) {
 
 	int i;
 	for(i = 0; i < size; i++) {
-		if((gr->matrix[i] = (int *) malloc(size * sizeof(int))) < 0) {
+		if((gr->matrix[i] = (int *) calloc(size, sizeof(int))) < 0) {
 			if(err != NULL) *err = GR_MALLOC;
 			return NULL;
 		}
@@ -60,6 +60,20 @@ void add_edge(graph *graph, int vertex1, int vertex2, GRERR *err) {
 	}
 
 	graph->matrix[vertex1][vertex2] = 1;
+	if(err != NULL) *err = GR_SUCCESS;
+	return;
+}
+
+void add_edges(graph *graph, int* vertices, int size, GRERR *err) {
+	if(graph == NULL) {
+		if(err != NULL) *err = GR_EMPTY;
+		return;
+	}
+
+	int i;
+	for(i = 0; i < size; i++) {
+		add_edge(graph, *(vertices + i * 2), *(vertices + i * 2 + 1), err);
+	}
 	if(err != NULL) *err = GR_SUCCESS;
 	return;
 }

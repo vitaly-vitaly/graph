@@ -3,7 +3,9 @@
 
 int main(int argc, char const *argv[])
 {
-	GRERR err;
+	GRERR err = GR_SUCCESS;
+
+	int vertices[5][2] = {{0, 1}, {1, 0}, {1, 2}, {2, 0}, {1, 3}};
 
 	fprintf(stdout, "Test init_graph #1 ");
 	init_graph(-1, &err);
@@ -23,6 +25,14 @@ int main(int argc, char const *argv[])
 
 	fprintf(stdout, "Test add_edge #3 ");
 	add_edge(gr, 2, 1, &err);
+	(err == GR_SUCCESS) ? fprintf(stdout, "PASSED\n") : fprintf(stdout, "FAILED\n");
+
+	fprintf(stdout, "Test add_edges #1 ");
+	add_edges(NULL, &vertices[0][0], 5, &err);
+	(err == GR_EMPTY) ? fprintf(stdout, "PASSED\n") : fprintf(stdout, "FAILED\n");
+
+	fprintf(stdout, "Test add_edges #2 ");
+	add_edges(gr, &vertices[0][0], 5, &err);
 	(err == GR_SUCCESS) ? fprintf(stdout, "PASSED\n") : fprintf(stdout, "FAILED\n");
 
 	fprintf(stdout, "Test print_graph #1 ");
