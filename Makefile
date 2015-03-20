@@ -1,5 +1,5 @@
-CFLAGS = -g -Wall 
-# -fprofile-arcs -ftest-coverage
+CFLAGS = -g -Wall
+ # -fprofile-arcs -ftest-coverage
 
 all: test
 

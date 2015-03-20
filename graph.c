@@ -26,6 +26,10 @@ graph *init_graph(int size, GRERR *err) {
 			return NULL;
 		}
 	}
+	if((gr->buf = (int *) calloc(size, sizeof(int))) < 0) {
+		if(err != NULL) *err = GR_MALLOC;
+		return NULL;
+	}
 
 	gr->size = size;
 	if(err != NULL) *err = GR_SUCCESS;
@@ -43,6 +47,7 @@ void destroy_graph(graph *graph, GRERR *err) {
 		free(graph->matrix[i]);
 	}
 	free(graph->matrix);
+	free(graph->buf);
 	free(graph);
 	if(err != NULL) *err = GR_SUCCESS;
 	return;
@@ -95,4 +100,54 @@ void print_graph(graph *graph, GRERR *err) {
 
 	if(err != NULL) *err = GR_SUCCESS;
 	return;	
+}
+
+void print_buf(graph *graph, GRERR *err) {
+	if(graph == NULL) {
+		if(err != NULL) *err = GR_EMPTY;
+		return;
+	}
+	
+	fprintf(stdout, "\n");
+	int i;
+	for(i = 0; i < graph->size; i++) {
+		fprintf(stdout, "%d ", graph->buf[i]);
+	}
+	fprintf(stdout, "\n");
+
+	if(err != NULL) *err = GR_SUCCESS;
+	return;	
+}
+
+void dfs(graph *graph, int root, GRERR *err) {
+	if(graph == NULL) {
+		if(err != NULL) *err = GR_EMPTY;
+		return;
+	}
+	if(root < 0 || root >= graph->size) {
+		if(err != NULL) *err = GR_BADSIZE;
+		return;
+	}
+
+	int i;
+	for(i = 0; i < graph->size; i++) {
+		if(i != root) {
+			graph->buf[i] = 0;
+		}
+	}
+
+	dfs_visit(graph, root, 0);
+	if(err != NULL) *err = GR_SUCCESS;
+	return;	
+}
+
+void dfs_visit(graph *graph, int v, int times) {
+	int i;
+	graph->buf[v] = 2;
+	for(i = 0; i < graph->size; i++) {
+		if(graph->matrix[v][i] > 0 && graph->buf[i] == 0) {
+			dfs_visit(graph, i, times+1);
+		}
+	}
+	graph->buf[v] = 1;
 }
