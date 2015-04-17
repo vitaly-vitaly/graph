@@ -27,3 +27,5 @@ void print_buf(graph *graph, GRERR *err);
 void dfs(graph *graph, int root, GRERR *err);
 
 void dfs_visit(graph *graph, int v, int times);
+
+void bfs(graph *graph, int root, GRERR *err);

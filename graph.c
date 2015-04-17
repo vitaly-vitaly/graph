@@ -1,6 +1,9 @@
 #include "graph.h"
 #include <stdio.h>
 #include <stdlib.h>
+#define WHITE 0
+#define GRAY 1
+#define BLACK 2
 
 graph *init_graph(int size, GRERR *err) {
 	if(size <= 0) {
@@ -132,10 +135,11 @@ void dfs(graph *graph, int root, GRERR *err) {
 	int i;
 	for(i = 0; i < graph->size; i++) {
 		if(i != root) {
-			graph->buf[i] = 0;
+			graph->buf[i] = -1;
 		}
 	}
 
+	graph->buf[root] = 2;
 	dfs_visit(graph, root, 0);
 	if(err != NULL) *err = GR_SUCCESS;
 	return;	
@@ -145,9 +149,64 @@ void dfs_visit(graph *graph, int v, int times) {
 	int i;
 	graph->buf[v] = 2;
 	for(i = 0; i < graph->size; i++) {
-		if(graph->matrix[v][i] > 0 && graph->buf[i] == 0) {
+		if(graph->matrix[v][i] > 0 && graph->buf[i] == -1) {
 			dfs_visit(graph, i, times+1);
 		}
 	}
 	graph->buf[v] = 1;
+}
+
+void bfs(graph *graph, int root, GRERR *err) {
+	if(graph == NULL) {
+		if(err != NULL) *err = GR_EMPTY;
+		return;
+	}
+	if(root < 0 || root >= graph->size) {
+		if(err != NULL) *err = GR_BADSIZE;
+		return;
+	}
+
+	int *color;
+	if((color = (int *) calloc(graph->size, sizeof(int))) < 0) {
+		if(err != NULL) *err = GR_MALLOC;
+		return;
+	}
+	int *q;
+	if((q = (int *) calloc(graph->size, sizeof(int))) < 0) {
+		if(err != NULL) *err = GR_MALLOC;
+		return;
+	}
+	int qstart = 0, qend = 0;
+
+	int i;
+	for(i = 0; i < graph->size; i++) {
+		graph->buf[i] = -1;
+		color[i] = WHITE;
+	}
+
+	graph->buf[root] = 0;
+	color[root] = GRAY;
+
+	q[qend++] = root;
+
+	while(qstart != qend) {
+		int u = q[qstart++];
+		int v;
+		for(v = 0; v < graph->size; v++) {
+			if(graph->matrix[u][v] > 0 && u != v) {
+				if(color[v] == WHITE) {
+					color[v] = GRAY;
+					graph->buf[v] = graph->buf[u] + 1;
+					q[qend++] = v;
+				}
+			}
+		}
+		color[u] = BLACK;
+	}
+
+	free(color);
+	free(q);
+
+	if(err != NULL) *err = GR_SUCCESS;
+	return;	
 }
